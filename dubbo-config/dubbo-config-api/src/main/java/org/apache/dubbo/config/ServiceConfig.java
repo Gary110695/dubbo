@@ -205,26 +205,39 @@ public class ServiceConfig<T> extends ServiceConfigBase<T> {
 
     @Override
     public synchronized void export() {
+        // 如果服务已经启动过了
         if (this.exported) {
             return;
         }
+
+        // dubbo服务实例内部有很多代码组件，如果零零散散的去调用、初始化，那么会导致代码非常散乱
+        // 因此在dubbo3.0引入ModuleDeployer组件，把服务实例的各个模块进行部署
         // prepare for export
+        // 一个服务实例启动，里面需要有线程资源（网络监听的线程，处理网络请求的线程，执行后台并发任务的线程）、网络资源（NIO、Netty）、代码组件资源
+        // 对服务实例的启动，做很多的初始化准备工作
         ModuleDeployer moduleDeployer = getScopeModel().getDeployer();
         moduleDeployer.prepare();
 
         if (!this.isRefreshed()) {
+            // 执行服务实例的刷新操作
             this.refresh();
         }
         if (this.shouldExport()) {
+            // 本身自己也会执行服务实例的初始化工作
             this.init();
 
+            // dubbo服务实例的延迟发布的特性
+            // 如果设置了dubbo服务实例是延迟发布的，当年你调用了export方法之后，会进入到这里
+            // 他会延迟你指定的时间之后，再去进行服务的发布
             if (shouldDelay()) {
                 doDelayExport();
             } else {
+                // 核心的服务对外发布的流程，就在这里
                 doExport();
             }
 
             // notify export this service
+            // 会执行通知操作
             moduleDeployer.notifyExportService(this);
         }
     }

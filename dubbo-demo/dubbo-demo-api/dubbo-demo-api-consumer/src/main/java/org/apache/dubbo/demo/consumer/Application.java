@@ -60,11 +60,20 @@ public class Application {
     }
 
     private static void runWithRefer() {
+        // consumer想要远程调用provider，需要有一个provider服务实例的引用，即Reference
+        // ReferenceConfig是要调用的其他服务实例的引用的配置
+        // 通过泛型指明了要调用的服务实例对外暴露的接口
         ReferenceConfig<DemoService> reference = new ReferenceConfig<>();
+        // consumer自己本身也是一个服务实例
         reference.setApplication(new ApplicationConfig("dubbo-demo-api-consumer"));
+        // 也需要去设置注册中心的地址
         reference.setRegistry(new RegistryConfig("zookeeper://127.0.0.1:2181"));
+        // 元数据上报的地址，也必须进行设置
         reference.setMetadataReportConfig(new MetadataReportConfig("zookeeper://127.0.0.1:2181"));
+        // 正式设置一下要调用的服务的接口
         reference.setInterface(DemoService.class);
+        // 拿到基于DemoService接口生成的动态代理
+        // 调用动态代理的接口，底层会去调用provider服务实例的接口
         DemoService service = reference.get();
         String message = service.sayHello("dubbo");
         System.out.println(message);

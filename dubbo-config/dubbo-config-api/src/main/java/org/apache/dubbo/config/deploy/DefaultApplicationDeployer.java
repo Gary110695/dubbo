@@ -185,6 +185,10 @@ public class DefaultApplicationDeployer extends AbstractDeployer<ApplicationMode
             return;
         }
         // Ensure that the initialization is completed when concurrent calls
+        // applicationDeployer组件，可能会被多线程并发访问
+        // 并不一定说多个线程都是并发访问这个initialize方法
+        // 服务实例启动的时候肯定是有一个线程在执行这个initialize方法，此时可能有别的线程会去访问别的方法
+        // 别的线程访问别的方法，也可以用synchronized (this)加锁，确保别的线程访问别的方法时必须被卡住，等待当前线程把initialize过程先执行完毕了再说
         synchronized (this) {
             if (initialized.get()) {
                 return;
