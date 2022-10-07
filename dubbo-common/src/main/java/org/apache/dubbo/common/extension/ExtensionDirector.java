@@ -32,6 +32,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class ExtensionDirector implements ExtensionAccessor {
 
+    // 扩展类与对应的扩展类加载器缓存
     private final ConcurrentMap<Class<?>, ExtensionLoader<?>> extensionLoadersMap = new ConcurrentHashMap<>(64);
     private ExtensionDirector parent;
     private final ExtensionScope scope;
@@ -61,12 +62,15 @@ public class ExtensionDirector implements ExtensionAccessor {
 
     @Override
     public <T> ExtensionLoader<T> getExtensionLoader(Class<T> type) {
+        // 会对传入的Class做校验
         if (type == null) {
             throw new IllegalArgumentException("Extension type == null");
         }
+        // 必须是接口
         if (!type.isInterface()) {
             throw new IllegalArgumentException("Extension type (" + type + ") is not an interface!");
         }
+        // 必须有 @SPI 注解
         if (!withExtensionAnnotation(type)) {
             throw new IllegalArgumentException("Extension type (" + type +
                 ") is not an extension, because it is NOT annotated with @" + SPI.class.getSimpleName() + "!");

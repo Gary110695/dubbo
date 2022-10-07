@@ -84,6 +84,7 @@ public class ScopeModelUtil {
             return ((ApplicationModel) scopeModel).getFrameworkModel();
         } else if (scopeModel instanceof ModuleModel) {
             ModuleModel moduleModel = (ModuleModel) scopeModel;
+            // 通过ApplicationModel间接获取，不越级获取
             return moduleModel.getApplicationModel().getFrameworkModel();
         } else if (scopeModel instanceof FrameworkModel) {
             return (FrameworkModel) scopeModel;

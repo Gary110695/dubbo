@@ -38,6 +38,7 @@ public class JavassistCompiler extends AbstractCompiler {
 
     private static final Pattern FIELD_PATTERN = Pattern.compile("[^\n]+=[^\n]+;");
 
+
     @Override
     public Class<?> doCompile(ClassLoader classLoader, String name, String source) throws Throwable {
         CtClassBuilder builder = new CtClassBuilder();

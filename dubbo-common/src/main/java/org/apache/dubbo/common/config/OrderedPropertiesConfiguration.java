@@ -46,13 +46,14 @@ public class OrderedPropertiesConfiguration implements Configuration{
             orderedPropertiesProviders.add(propertiesProviderExtensionLoader.getExtension(propertiesProviderName));
         }
 
-        //order the propertiesProvider according the priority descending
+        // order the propertiesProvider according the priority descending
+        // 根据优先级进行排序，值越小优先级越高
         orderedPropertiesProviders.sort((OrderedPropertiesProvider a, OrderedPropertiesProvider b) -> {
             return b.priority() - a.priority();
         });
 
 
-        //override the properties.
+        // override the properties.
         for (OrderedPropertiesProvider orderedPropertiesProvider :
             orderedPropertiesProviders) {
             properties.putAll(orderedPropertiesProvider.initProperties());

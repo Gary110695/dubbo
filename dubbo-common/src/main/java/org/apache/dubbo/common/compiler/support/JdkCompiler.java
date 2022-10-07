@@ -109,6 +109,11 @@ public class JdkCompiler extends AbstractCompiler {
         this(buildDefaultOptions(javaVersion));
     }
 
+    /**
+     * 整个动态编译过程可以简单地总结为：
+     * 首先初始化一个JavaFileObject对象，并把代码字符串作为参数传入构造方法，然后调用JavaCompiler.CompilationTask方法编译出具体的类
+     * JavaFileManager负责管理类文件的输入/输出位置
+     */
     @Override
     public Class<?> doCompile(ClassLoader ignored, String name, String sourceCode) throws Throwable {
         int i = name.lastIndexOf('.');
@@ -117,6 +122,7 @@ public class JdkCompiler extends AbstractCompiler {
         JavaFileObjectImpl javaFileObject = new JavaFileObjectImpl(className, sourceCode);
         javaFileManager.putFileForInput(StandardLocation.SOURCE_PATH, packageName,
                 className + ClassUtils.JAVA_EXTENSION, javaFileObject);
+        // 由 DavaCompiler.CompilationTask 把 JavaFileObject 对象编译成具体的类
         Boolean result = compiler.getTask(null, javaFileManager, diagnosticCollector, options,
                 null, Collections.singletonList(javaFileObject)).call();
         if (result == null || !result) {
@@ -125,6 +131,11 @@ public class JdkCompiler extends AbstractCompiler {
         return classLoader.loadClass(name);
     }
 
+    /**
+     * JavaFileObject接口：字符串代码会被包装成一个文件对象，并提供获取二进制流的接口
+     *
+     * Dubbo框架中的JavaFileObjectImpl类可以看作该接口一种扩展实现，构造方法中需要传入生成好的字符串代码，此文件对象的输入和输出都是ByteArray流
+     */
     private static final class JavaFileObjectImpl extends SimpleJavaFileObject {
 
         private final CharSequence source;
@@ -168,6 +179,13 @@ public class JdkCompiler extends AbstractCompiler {
         }
     }
 
+    /**
+     * JavaFileManager接口：主要管理文件的读取和输出位置
+     *
+     * JDK中没有可以直接使用的实现类，唯一的实现类ForwardingDavaFileManager的构造方法又是protect修饰
+     *
+     * 因此Dubbo中定制化实现了一个DavaFileManagerImpl类，并通过一个自定义类加载器ClassLoaderImpl完成资源的加载
+     */
     private static final class JavaFileManagerImpl extends ForwardingJavaFileManager<JavaFileManager> {
 
         private final ClassLoaderImpl classLoader;

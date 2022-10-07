@@ -29,6 +29,7 @@ import org.apache.dubbo.common.extension.SPI;
  *
  * @see org.apache.dubbo.remoting.Transporters
  */
+// 使用 NettyTransporter 作为默认实现
 @SPI(value = "netty", scope = ExtensionScope.FRAMEWORK)
 public interface Transporter {
 
@@ -41,7 +42,7 @@ public interface Transporter {
      * @throws RemotingException
      * @see org.apache.dubbo.remoting.Transporters#bind(URL, ChannelHandler...)
      */
-    @Adaptive({Constants.SERVER_KEY, Constants.TRANSPORTER_KEY})
+    @Adaptive({Constants.SERVER_KEY, Constants.TRANSPORTER_KEY})    // 利用 @Adaptive 注解，可以通过参数动态获得实现类
     RemotingServer bind(URL url, ChannelHandler handler) throws RemotingException;
 
     /**

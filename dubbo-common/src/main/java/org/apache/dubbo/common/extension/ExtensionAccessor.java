@@ -27,6 +27,7 @@ public interface ExtensionAccessor {
         return this.getExtensionDirector().getExtensionLoader(type);
     }
 
+    // 获取扩展点接口的具体实现
     default <T> T getExtension(Class<T> type, String name) {
         ExtensionLoader<T> extensionLoader = getExtensionLoader(type);
         return extensionLoader != null ? extensionLoader.getExtension(name) : null;

@@ -96,6 +96,9 @@ public class AdaptiveClassCodeGenerator {
 
     /**
      * generate and return class code
+     *
+     * 为扩展点接口自动生成实现类字符串，具体细节参考4.3.3小节
+     *
      * @param sort - whether sort methods
      */
     public String generate(boolean sort) {
@@ -105,6 +108,7 @@ public class AdaptiveClassCodeGenerator {
         }
 
         StringBuilder code = new StringBuilder();
+        // 生成package、import、类名称等头部信息
         code.append(generatePackageInfo());
         code.append(generateImports());
         code.append(generateClassDeclaration());

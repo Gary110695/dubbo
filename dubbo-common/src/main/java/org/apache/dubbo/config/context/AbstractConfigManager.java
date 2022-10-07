@@ -111,6 +111,8 @@ public abstract class AbstractConfigManager extends LifecycleAdapter {
         CompositeConfiguration configuration = scopeModel.getModelEnvironment().getConfiguration();
 
         // dubbo.config.mode
+        // dubbo.config.mode获取配置模式，配置模式对应枚举类型 ConfigMode，目前有这么几个STRICT, OVERRIDE, OVERRIDE_ALL, OVERRIDE_IF_ABSENT, IGNORE
+        // 这个配置决定了属性覆盖的顺序，当有同一个配置key多次出现时候，以最新配置为准，还是以最老的那个配置为准，还是配置重复则抛出异常，默认值为严格模式STRICT，重复则抛出异常
         String configModeStr = (String) configuration.getProperty(ConfigKeys.DUBBO_CONFIG_MODE);
         try {
             if (StringUtils.hasText(configModeStr)) {
@@ -123,13 +125,14 @@ public abstract class AbstractConfigManager extends LifecycleAdapter {
         }
 
         // dubbo.config.ignore-duplicated-interface
+        // 忽略重复的接口（服务/引用）配置，默认值为false
         String ignoreDuplicatedInterfaceStr = (String) configuration
             .getProperty(ConfigKeys.DUBBO_CONFIG_IGNORE_DUPLICATED_INTERFACE);
         if (ignoreDuplicatedInterfaceStr != null) {
             this.ignoreDuplicatedInterface = Boolean.parseBoolean(ignoreDuplicatedInterfaceStr);
         }
 
-        // print
+        // print 打印配置信息
         Map<String, Object> map = new LinkedHashMap<>();
         map.put(ConfigKeys.DUBBO_CONFIG_MODE, configMode);
         map.put(ConfigKeys.DUBBO_CONFIG_IGNORE_DUPLICATED_INTERFACE, this.ignoreDuplicatedInterface);

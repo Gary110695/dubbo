@@ -54,7 +54,7 @@ public class Application {
     private static void startWithExport() throws InterruptedException {
         // Service是服务，每个服务可以暴露多个接口，供其他服务来调用
         // ServiceConfig是针对这个dubbo服务的一些配置信息
-        // 服务暴露的接口必须有实现代码，泛型里包含的DemoServiceImpl指明了服务暴露接口的实现代码
+        // 服务暴露的接口必须有实现类，泛型里包含的DemoServiceImpl指明了服务暴露接口的实现类
         ServiceConfig<DemoServiceImpl> service = new ServiceConfig<>();
         // 设置服务暴露的接口
         service.setInterface(DemoService.class);
@@ -62,7 +62,7 @@ public class Application {
         service.setRef(new DemoServiceImpl());
         // 设置服务名称
         service.setApplication(new ApplicationConfig("dubbo-demo-api-provider"));
-        // 设置zk作为注册中心的地址
+        // zk作为注册中心，设置zk的地址
         // 所有的rpc框架，必须要跟注册中心配合使用
         // 服务启动之后，必须向注册中心进行注册
         // 注册中心知道每一个服务有几个实例，每个实例在哪台机器上

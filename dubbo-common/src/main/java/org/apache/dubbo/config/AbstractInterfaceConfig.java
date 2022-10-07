@@ -97,6 +97,8 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
 
     /**
      * Service monitor
+     *
+     * 服务监控配置
      */
     protected MonitorConfig monitor;
 
@@ -228,6 +230,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
         if (this.metadataReportConfig != null && this.metadataReportConfig.getScopeModel() != applicationModel) {
             this.metadataReportConfig.setScopeModel(applicationModel);
         }
+        // 如果注册中心配置列表不为空，则为每个注册中心配置设置一个 ApplicationModel
         if (CollectionUtils.isNotEmpty(this.registries)) {
             this.registries.forEach(registryConfig -> {
                 if (registryConfig.getScopeModel() != applicationModel) {

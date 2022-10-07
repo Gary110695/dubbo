@@ -146,8 +146,13 @@ public class ServiceConfig<T> extends ServiceConfigBase<T> {
     @Override
     protected void postProcessAfterScopeModelChanged(ScopeModel oldScopeModel, ScopeModel newScopeModel) {
         super.postProcessAfterScopeModelChanged(oldScopeModel, newScopeModel);
+        // 协议对象，通过扩展机制获取协议Protocol类型的对象
         protocolSPI = this.getExtensionLoader(Protocol.class).getAdaptiveExtension();
+        // 代理工厂对象，通过扩展机制获取ProxyFactory类型的对象
         proxyFactory = this.getExtensionLoader(ProxyFactory.class).getAdaptiveExtension();
+        // 本地元数据服务对象，通过 ExtensionLoader 获取接口 WritableMetadataService 的默认实现
+        // 在 dubbo-registry/dubbo-registry-api resources/META-INF/dubbo/internal 目录下的
+        // org.apache.dubbo.metadata.WritableMetadataService 文件中可以找到默认实现为 InMemoryWritableMetadataService
         localMetadataService = this.getScopeModel().getDefaultExtension(WritableMetadataService.class);
     }
 
@@ -205,13 +210,13 @@ public class ServiceConfig<T> extends ServiceConfigBase<T> {
 
     @Override
     public synchronized void export() {
-        // 如果服务已经启动过了
+        // 如果服务已经对外暴露了
         if (this.exported) {
             return;
         }
 
-        // dubbo服务实例内部有很多代码组件，如果零零散散的去调用、初始化，那么会导致代码非常散乱
-        // 因此在dubbo3.0引入ModuleDeployer组件，把服务实例的各个模块进行部署
+        // dubbo服务实例内部有很多组件，如果零零散散的去调用、初始化，那么会导致代码非常散乱
+        // 因此在 dubbo3.0 引入 ModuleDeployer 组件，把服务实例的各个模块进行部署
         // prepare for export
         // 一个服务实例启动，里面需要有线程资源（网络监听的线程，处理网络请求的线程，执行后台并发任务的线程）、网络资源（NIO、Netty）、代码组件资源
         // 对服务实例的启动，做很多的初始化准备工作
@@ -223,21 +228,21 @@ public class ServiceConfig<T> extends ServiceConfigBase<T> {
             this.refresh();
         }
         if (this.shouldExport()) {
-            // 本身自己也会执行服务实例的初始化工作
+            // 执行服务实例的初始化工作
             this.init();
 
-            // dubbo服务实例的延迟发布的特性
-            // 如果设置了dubbo服务实例是延迟发布的，当年你调用了export方法之后，会进入到这里
-            // 他会延迟你指定的时间之后，再去进行服务的发布
+            // dubbo服务实例的延迟暴露的特性
+            // 如果设置了dubbo服务实例是延迟暴露的，当你调用了export方法之后，会进入到这里
+            // 他会延迟你指定的时间之后，再去进行服务的暴露
             if (shouldDelay()) {
                 doDelayExport();
             } else {
-                // 核心的服务对外发布的流程，就在这里
+                // 核心的服务对外暴露的流程，就在这里
                 doExport();
             }
 
             // notify export this service
-            // 会执行通知操作
+            // 执行通知操作
             moduleDeployer.notifyExportService(this);
         }
     }

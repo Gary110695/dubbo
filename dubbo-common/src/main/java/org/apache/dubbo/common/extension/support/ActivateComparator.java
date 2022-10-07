@@ -38,6 +38,7 @@ public class ActivateComparator implements Comparator<Class<?>> {
 
     @Override
     public int compare(Class o1, Class o2) {
+        // 根据@Activate中配置的before、after、order等参数进行排序
         if (o1 == null && o2 == null) {
             return 0;
         }

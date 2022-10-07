@@ -101,8 +101,7 @@ public class ExtensionLoaderTest {
             getExtensionLoader(null);
             fail();
         } catch (IllegalArgumentException expected) {
-            assertThat(expected.getMessage(),
-                containsString("Extension type == null"));
+            assertThat(expected.getMessage(), containsString("Extension type == null"));
         }
     }
 
@@ -112,8 +111,7 @@ public class ExtensionLoaderTest {
             getExtensionLoader(ExtensionLoaderTest.class);
             fail();
         } catch (IllegalArgumentException expected) {
-            assertThat(expected.getMessage(),
-                containsString("Extension type (class org.apache.dubbo.common.extension.ExtensionLoaderTest) is not an interface"));
+            assertThat(expected.getMessage(), containsString("Extension type (class org.apache.dubbo.common.extension.ExtensionLoaderTest) is not an interface"));
         }
     }
 
@@ -123,10 +121,8 @@ public class ExtensionLoaderTest {
             getExtensionLoader(NoSpiExt.class);
             fail();
         } catch (IllegalArgumentException expected) {
-            assertThat(expected.getMessage(),
-                allOf(containsString("org.apache.dubbo.common.extension.NoSpiExt"),
-                    containsString("is not an extension"),
-                    containsString("NOT annotated with @SPI")));
+            assertThat(expected.getMessage(), allOf(containsString("org.apache.dubbo.common.extension.NoSpiExt"), containsString("is not an extension"), containsString("NOT " +
+                    "annotated with @SPI")));
         }
     }
 
@@ -188,8 +184,7 @@ public class ExtensionLoaderTest {
     @Test
     public void test_getActivateExtension_WithWrapper() {
         URL url = URL.valueOf("test://localhost/test");
-        List<ActivateExt1> list = getExtensionLoader(ActivateExt1.class)
-            .getActivateExtension(url, new String[]{}, "order");
+        List<ActivateExt1> list = getExtensionLoader(ActivateExt1.class).getActivateExtension(url, new String[]{}, "order");
         assertEquals(2, list.size());
     }
 
@@ -341,9 +336,8 @@ public class ExtensionLoaderTest {
         try {
             getExtensionLoader(SimpleExt.class).addExtension("impl1", ExtensionLoaderTest.class);
         } catch (IllegalStateException expected) {
-            assertThat(expected.getMessage(),
-                containsString("Input type class org.apache.dubbo.common.extension.ExtensionLoaderTest " +
-                    "doesn't implement the Extension interface org.apache.dubbo.common.extension.ext1.SimpleExt"));
+            assertThat(expected.getMessage(), containsString("Input type class org.apache.dubbo.common.extension.ExtensionLoaderTest " + "doesn't implement the Extension " +
+                    "interface org.apache.dubbo.common.extension.ext1.SimpleExt"));
         }
     }
 
@@ -352,9 +346,7 @@ public class ExtensionLoaderTest {
         try {
             getExtensionLoader(SimpleExt.class).addExtension("impl1", SimpleExt.class);
         } catch (IllegalStateException expected) {
-            assertThat(expected.getMessage(),
-                containsString("Input type interface org.apache.dubbo.common.extension.ext1.SimpleExt " +
-                    "can't be interface!"));
+            assertThat(expected.getMessage(), containsString("Input type interface org.apache.dubbo.common.extension.ext1.SimpleExt " + "can't be interface!"));
         }
     }
 
@@ -363,9 +355,8 @@ public class ExtensionLoaderTest {
         try {
             getExtensionLoader(NoAdaptiveExt.class).addExtension(null, NoAdaptiveExtImpl.class);
         } catch (IllegalStateException expected) {
-            assertThat(expected.getMessage(),
-                containsString("Extension name is blank " +
-                    "(Extension interface org.apache.dubbo.common.extension.ext11_no_adaptive.NoAdaptiveExt)!"));
+            assertThat(expected.getMessage(), containsString("Extension name is blank " + "(Extension interface org.apache.dubbo.common.extension.ext11_no_adaptive" +
+                    ".NoAdaptiveExt)!"));
         }
     }
 
@@ -422,9 +413,8 @@ public class ExtensionLoaderTest {
         try {
             getExtensionLoader(SimpleExt.class).replaceExtension("impl1", ExtensionLoaderTest.class);
         } catch (IllegalStateException expected) {
-            assertThat(expected.getMessage(),
-                containsString("Input type class org.apache.dubbo.common.extension.ExtensionLoaderTest " +
-                    "doesn't implement Extension interface org.apache.dubbo.common.extension.ext1.SimpleExt"));
+            assertThat(expected.getMessage(), containsString("Input type class org.apache.dubbo.common.extension.ExtensionLoaderTest " + "doesn't implement Extension interface " +
+                    "org.apache.dubbo.common.extension.ext1.SimpleExt"));
         }
     }
 
@@ -433,9 +423,7 @@ public class ExtensionLoaderTest {
         try {
             getExtensionLoader(SimpleExt.class).replaceExtension("impl1", SimpleExt.class);
         } catch (IllegalStateException expected) {
-            assertThat(expected.getMessage(),
-                containsString("Input type interface org.apache.dubbo.common.extension.ext1.SimpleExt " +
-                    "can't be interface!"));
+            assertThat(expected.getMessage(), containsString("Input type interface org.apache.dubbo.common.extension.ext1.SimpleExt " + "can't be interface!"));
         }
     }
 
@@ -484,7 +472,8 @@ public class ExtensionLoaderTest {
             getExtensionLoader(AddExt1.class).replaceExtension("NotExistedExtension", AddExt1_ManualAdd1.class);
             fail();
         } catch (IllegalStateException expected) {
-            assertThat(expected.getMessage(), containsString("Extension name NotExistedExtension doesn't exist (Extension interface org.apache.dubbo.common.extension.ext8_add.AddExt1)"));
+            assertThat(expected.getMessage(), containsString("Extension name NotExistedExtension doesn't exist (Extension interface org.apache.dubbo.common.extension.ext8_add" +
+                    ".AddExt1)"));
         }
     }
 
@@ -519,40 +508,34 @@ public class ExtensionLoaderTest {
     public void testLoadActivateExtension() {
         // test default
         URL url = URL.valueOf("test://localhost/test");
-        List<ActivateExt1> list = getExtensionLoader(ActivateExt1.class)
-            .getActivateExtension(url, new String[]{}, "default_group");
+        List<ActivateExt1> list = getExtensionLoader(ActivateExt1.class).getActivateExtension(url, new String[]{}, "default_group");
         Assertions.assertEquals(1, list.size());
         assertSame(list.get(0).getClass(), ActivateExt1Impl1.class);
 
         // test group
         url = url.addParameter(GROUP_KEY, "group1");
-        list = getExtensionLoader(ActivateExt1.class)
-            .getActivateExtension(url, new String[]{}, "group1");
+        list = getExtensionLoader(ActivateExt1.class).getActivateExtension(url, new String[]{}, "group1");
         Assertions.assertEquals(1, list.size());
         assertSame(list.get(0).getClass(), GroupActivateExtImpl.class);
 
         // test old @Activate group
         url = url.addParameter(GROUP_KEY, "old_group");
-        list = getExtensionLoader(ActivateExt1.class)
-            .getActivateExtension(url, new String[]{}, "old_group");
+        list = getExtensionLoader(ActivateExt1.class).getActivateExtension(url, new String[]{}, "old_group");
         Assertions.assertEquals(2, list.size());
-        Assertions.assertTrue(list.get(0).getClass() == OldActivateExt1Impl2.class
-            || list.get(0).getClass() == OldActivateExt1Impl3.class);
+        Assertions.assertTrue(list.get(0).getClass() == OldActivateExt1Impl2.class || list.get(0).getClass() == OldActivateExt1Impl3.class);
 
         // test value
         url = url.removeParameter(GROUP_KEY);
         url = url.addParameter(GROUP_KEY, "value");
         url = url.addParameter("value", "value");
-        list = getExtensionLoader(ActivateExt1.class)
-            .getActivateExtension(url, new String[]{}, "value");
+        list = getExtensionLoader(ActivateExt1.class).getActivateExtension(url, new String[]{}, "value");
         Assertions.assertEquals(1, list.size());
         assertSame(list.get(0).getClass(), ValueActivateExtImpl.class);
 
         // test order
         url = URL.valueOf("test://localhost/test");
         url = url.addParameter(GROUP_KEY, "order");
-        list = getExtensionLoader(ActivateExt1.class)
-            .getActivateExtension(url, new String[]{}, "order");
+        list = getExtensionLoader(ActivateExt1.class).getActivateExtension(url, new String[]{}, "order");
         Assertions.assertEquals(2, list.size());
         assertSame(list.get(0).getClass(), OrderActivateExtImpl1.class);
         assertSame(list.get(1).getClass(), OrderActivateExtImpl2.class);
@@ -562,22 +545,19 @@ public class ExtensionLoaderTest {
     public void testLoadDefaultActivateExtension() {
         // test default
         URL url = URL.valueOf("test://localhost/test?ext=order1,default");
-        List<ActivateExt1> list = getExtensionLoader(ActivateExt1.class)
-            .getActivateExtension(url, "ext", "default_group");
+        List<ActivateExt1> list = getExtensionLoader(ActivateExt1.class).getActivateExtension(url, "ext", "default_group");
         Assertions.assertEquals(2, list.size());
         assertSame(list.get(0).getClass(), OrderActivateExtImpl1.class);
         assertSame(list.get(1).getClass(), ActivateExt1Impl1.class);
 
         url = URL.valueOf("test://localhost/test?ext=default,order1");
-        list = getExtensionLoader(ActivateExt1.class)
-            .getActivateExtension(url, "ext", "default_group");
+        list = getExtensionLoader(ActivateExt1.class).getActivateExtension(url, "ext", "default_group");
         Assertions.assertEquals(2, list.size());
         assertSame(list.get(0).getClass(), ActivateExt1Impl1.class);
         assertSame(list.get(1).getClass(), OrderActivateExtImpl1.class);
 
         url = URL.valueOf("test://localhost/test?ext=order1");
-        list = getExtensionLoader(ActivateExt1.class)
-            .getActivateExtension(url, "ext", "default_group");
+        list = getExtensionLoader(ActivateExt1.class).getActivateExtension(url, "ext", "default_group");
         Assertions.assertEquals(2, list.size());
         assertSame(list.get(0).getClass(), ActivateExt1Impl1.class);
         assertSame(list.get(1).getClass(), OrderActivateExtImpl1.class);
@@ -590,7 +570,7 @@ public class ExtensionLoaderTest {
         ApplicationModel.defaultModel().getBeanFactory().registerBean(demoBean);
         // test default
         InjectExt injectExt = getExtensionLoader(InjectExt.class).getExtension("injection");
-        InjectExtImpl injectExtImpl = (InjectExtImpl) injectExt;
+        InjectExtImpl injectExtImpl = (InjectExtImpl)injectExt;
         Assertions.assertNotNull(injectExtImpl.getSimpleExt());
         Assertions.assertNull(injectExtImpl.getSimpleExt1());
         Assertions.assertNull(injectExtImpl.getGenericType());
@@ -603,10 +583,7 @@ public class ExtensionLoaderTest {
         Assertions.assertNotNull(ext10MultiNames);
         ext10MultiNames = getExtensionLoader(Ext10MultiNames.class).getExtension("implMultiName");
         Assertions.assertNotNull(ext10MultiNames);
-        Assertions.assertThrows(
-            IllegalStateException.class,
-            () -> getExtensionLoader(Ext10MultiNames.class).getExtension("impl,implMultiName")
-        );
+        Assertions.assertThrows(IllegalStateException.class, () -> getExtensionLoader(Ext10MultiNames.class).getExtension("impl,implMultiName"));
     }
 
     @Test
@@ -682,16 +659,17 @@ public class ExtensionLoaderTest {
     @Test
     public void testDuplicatedImplWithoutOverriddenStrategy() {
         List<LoadingStrategy> loadingStrategies = ExtensionLoader.getLoadingStrategies();
-        ExtensionLoader.setLoadingStrategies(new DubboExternalLoadingStrategyTest(false),
-                new DubboInternalLoadingStrategyTest(false));
+        ExtensionLoader.setLoadingStrategies(new DubboExternalLoadingStrategyTest(false), new DubboInternalLoadingStrategyTest(false));
         ExtensionLoader<DuplicatedWithoutOverriddenExt> extensionLoader = getExtensionLoader(DuplicatedWithoutOverriddenExt.class);
         try {
             extensionLoader.getExtension("duplicated");
             fail();
         } catch (IllegalStateException expected) {
-            assertThat(expected.getMessage(), containsString("Failed to load extension class (interface: interface org.apache.dubbo.common.extension.duplicated.DuplicatedWithoutOverriddenExt"));
-            assertThat(expected.getMessage(), containsString("cause: Duplicate extension org.apache.dubbo.common.extension.duplicated.DuplicatedWithoutOverriddenExt name duplicated"));
-        }finally {
+            assertThat(expected.getMessage(), containsString("Failed to load extension class (interface: interface org.apache.dubbo.common.extension.duplicated" +
+                    ".DuplicatedWithoutOverriddenExt"));
+            assertThat(expected.getMessage(), containsString("cause: Duplicate extension org.apache.dubbo.common.extension.duplicated.DuplicatedWithoutOverriddenExt name " +
+                    "duplicated"));
+        } finally {
             //recover the loading strategies
             ExtensionLoader.setLoadingStrategies(loadingStrategies.toArray(new LoadingStrategy[loadingStrategies.size()]));
         }
@@ -700,8 +678,7 @@ public class ExtensionLoaderTest {
     @Test
     public void testDuplicatedImplWithOverriddenStrategy() {
         List<LoadingStrategy> loadingStrategies = ExtensionLoader.getLoadingStrategies();
-        ExtensionLoader.setLoadingStrategies(new DubboExternalLoadingStrategyTest(true),
-                new DubboInternalLoadingStrategyTest(true));
+        ExtensionLoader.setLoadingStrategies(new DubboExternalLoadingStrategyTest(true), new DubboInternalLoadingStrategyTest(true));
         ExtensionLoader<DuplicatedOverriddenExt> extensionLoader = getExtensionLoader(DuplicatedOverriddenExt.class);
         DuplicatedOverriddenExt duplicatedOverriddenExt = extensionLoader.getExtension("duplicated");
         assertEquals("DuplicatedOverriddenExt1", duplicatedOverriddenExt.echo());

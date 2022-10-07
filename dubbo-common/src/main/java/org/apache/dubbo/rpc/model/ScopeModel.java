@@ -85,9 +85,15 @@ public abstract class ScopeModel implements ExtensionAccessor {
      * </ol>
      */
     protected void initialize() {
+        // 初始化ExtensionDirector是一个作用域扩展加载程序管理器
+        // ExtensionDirector支持多个级别，子级可以继承父级的扩展实例
+        // 查找和创建扩展实例的方法类似于Java classloader
         this.extensionDirector = new ExtensionDirector(parent != null ? parent.getExtensionDirector() : null, scope, this);
+        //这个参考了Spring的生命周期回调思想，添加一个扩展初始化的前后调用的处理器，在扩展初始化之前或之后调用的后处理器，参数类型为ExtensionPostProcessor
         this.extensionDirector.addExtensionPostProcessor(new ScopeModelAwareExtensionProcessor(this));
+        //创建一个内部共享的域工厂对象，用于注册Bean，创建Bean，获取Bean，初始化Bean等
         this.beanFactory = new ScopeBeanFactory(parent != null ? parent.getBeanFactory() : null, extensionDirector);
+        // 创建销毁监听器容器，一般用于关闭进程，重置应用程序对象等操作时候调用
         this.destroyListeners = new LinkedList<>();
         this.attributes = new ConcurrentHashMap<>();
         this.classLoaders = new ConcurrentHashSet<>();

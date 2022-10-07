@@ -27,6 +27,8 @@ import java.util.regex.Pattern;
 
 /**
  * Abstract compiler. (SPI, Prototype, ThreadSafe)
+ *
+ * 该类封装了通用的模板逻辑，还定义了一个抽象方法decompile，留给子类来实现具体的编译逻辑
  */
 public abstract class AbstractCompiler implements Compiler {
 
@@ -36,6 +38,12 @@ public abstract class AbstractCompiler implements Compiler {
 
     private static final Map<String, Lock> CLASS_IN_CREATION_MAP = new ConcurrentHashMap<>();
 
+    /**
+     * 主要流程：
+     * 1.通过正则匹配出包路径、类名，再根据包路径、类名拼接出全路径类名
+     * 2.尝试通过Class.forName加载该类并返回，防止重复编译。如果类加载器中没有这个类，则进入第3步
+     * 3.调用doCompile方法进行编译，该方法由子类实现
+     */
     @Override
     public Class<?> compile(String code, ClassLoader classLoader) {
         code = code.trim();

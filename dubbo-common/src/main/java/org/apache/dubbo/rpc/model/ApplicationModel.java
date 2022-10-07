@@ -228,6 +228,7 @@ public class ApplicationModel extends ScopeModel {
 
     private void initApplicationExts() {
         Set<ApplicationExt> exts = this.getExtensionLoader(ApplicationExt.class).getSupportedExtensionInstances();
+        // ConfigManager、Environment
         for (ApplicationExt ext : exts) {
             ext.initialize();
         }
@@ -284,6 +285,7 @@ public class ApplicationModel extends ScopeModel {
     public FrameworkModel getFrameworkModel() {
         return frameworkModel;
     }
+
     public ModuleModel newModule() {
         return new ModuleModel(this);
     }
@@ -291,16 +293,14 @@ public class ApplicationModel extends ScopeModel {
     @Override
     public Environment getModelEnvironment() {
         if (environment == null) {
-            environment = (Environment) this.getExtensionLoader(ApplicationExt.class)
-                .getExtension(Environment.NAME);
+            environment = (Environment)this.getExtensionLoader(ApplicationExt.class).getExtension(Environment.NAME);
         }
         return environment;
     }
 
     public ConfigManager getApplicationConfigManager() {
         if (configManager == null) {
-            configManager = (ConfigManager) this.getExtensionLoader(ApplicationExt.class)
-                .getExtension(ConfigManager.NAME);
+            configManager = (ConfigManager)this.getExtensionLoader(ApplicationExt.class).getExtension(ConfigManager.NAME);
         }
         return configManager;
     }
@@ -349,8 +349,7 @@ public class ApplicationModel extends ScopeModel {
     }
 
     void tryDestroy() {
-        if (this.moduleModels.isEmpty()
-            || (this.moduleModels.size() == 1 && this.moduleModels.get(0) == internalModule)) {
+        if (this.moduleModels.isEmpty() || (this.moduleModels.size() == 1 && this.moduleModels.get(0) == internalModule)) {
             destroy();
         }
     }

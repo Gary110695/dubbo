@@ -59,6 +59,7 @@ public class FrameworkModel extends ScopeModel {
     @Override
     protected void initialize() {
         super.initialize();
+        // 框架服务存储仓库对象，可以用于快速查询服务提供者信息
         serviceRepository = new FrameworkServiceRepository(this);
         allInstances.add(this);
 

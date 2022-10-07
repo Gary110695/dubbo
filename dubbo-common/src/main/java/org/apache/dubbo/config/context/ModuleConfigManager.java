@@ -50,6 +50,7 @@ public class ModuleConfigManager extends AbstractConfigManager {
 
 
     public ModuleConfigManager(ModuleModel moduleModel) {
+        // 第二个参数为模块支持的配置类型集合
         super(moduleModel, Arrays.asList(ModuleConfig.class, ServiceConfigBase.class, ReferenceConfigBase.class, ProviderConfig.class, ConsumerConfig.class));
     }
 

@@ -77,22 +77,31 @@ public class Environment extends LifecycleAdapter implements ApplicationExt {
     @Override
     public void initialize() throws IllegalStateException {
         if (initialized.compareAndSet(false, true)) {
+            // PropertiesConfiguration是从系统属性和dubbo.properties中获取配置
             this.propertiesConfiguration = new PropertiesConfiguration(scopeModel);
+            // SystemConfiguration获取的是JVM参数，启动命令中-D指定的
             this.systemConfiguration = new SystemConfiguration();
+            // EnvironmentConfiguration是从环境变量中获取的配置
             this.environmentConfiguration = new EnvironmentConfiguration();
+            // 外部的Global配置config-center global/default config
             this.externalConfiguration = new InmemoryConfiguration("ExternalConfig");
+            // 外部的应用配置如:config-center中的应用配置
             this.appExternalConfiguration = new InmemoryConfiguration("AppExternalConfig");
+            // 本地应用配置，如Spring Environment/PropertySources/application.properties
             this.appConfiguration = new InmemoryConfiguration("AppConfig");
-
+            // 服务迁移配置加载 dubbo2升级dubbo3的一些配置
             loadMigrationRule();
         }
     }
 
     private void loadMigrationRule() {
+        // JVM参数中获取
         String path = System.getProperty(CommonConstants.DUBBO_MIGRATION_KEY);
         if (path == null || path.length() == 0) {
+            // env环境变量中获取
             path = System.getenv(CommonConstants.DUBBO_MIGRATION_KEY);
             if (path == null || path.length() == 0) {
+                // 类路径下的dubbo-migration.yaml
                 path = CommonConstants.DEFAULT_DUBBO_MIGRATION_FILE;
             }
         }

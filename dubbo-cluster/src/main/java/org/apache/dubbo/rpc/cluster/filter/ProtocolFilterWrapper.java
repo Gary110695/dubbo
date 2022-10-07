@@ -40,6 +40,9 @@ public class ProtocolFilterWrapper implements Protocol {
 
     private final Protocol protocol;
 
+    // 实现了 Protocol ，构造函数中又传入了一个 Protocol 类型的参数
+    // ProtocolFilterWrapper会被认定为
+    // 包装扩展类，框架会自动注入
     public ProtocolFilterWrapper(Protocol protocol) {
         if (protocol == null) {
             throw new IllegalArgumentException("protocol == null");

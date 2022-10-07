@@ -47,8 +47,6 @@ public abstract class ServiceConfigBase<T> extends AbstractServiceConfig {
 
     private static final long serialVersionUID = 3033787999037024738L;
 
-
-
     /**
      * The interface class of the exported service
      */
@@ -79,9 +77,8 @@ public abstract class ServiceConfigBase<T> extends AbstractServiceConfig {
      */
     protected volatile String generic;
 
-
-
     public ServiceConfigBase() {
+        // 创建服务元数据对象
         serviceMetadata = new ServiceMetadata();
         serviceMetadata.addAttribute("ORIGIN_CONFIG", this);
     }
@@ -108,6 +105,7 @@ public abstract class ServiceConfigBase<T> extends AbstractServiceConfig {
     @Override
     protected void postProcessAfterScopeModelChanged(ScopeModel oldScopeModel, ScopeModel newScopeModel) {
         super.postProcessAfterScopeModelChanged(oldScopeModel, newScopeModel);
+        // 当服务提供者配置对象不为空时，为服务提供者对象设置ScopeModel，这个一般用在兼容Dubbo低版本
         if (this.provider != null && this.provider.getScopeModel() != scopeModel) {
             this.provider.setScopeModel(scopeModel);
         }
