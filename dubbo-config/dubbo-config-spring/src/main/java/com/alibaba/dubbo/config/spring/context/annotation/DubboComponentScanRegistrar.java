@@ -55,8 +55,13 @@ public class DubboComponentScanRegistrar implements ImportBeanDefinitionRegistra
 
         Set<String> packagesToScan = getPackagesToScan(importingClassMetadata);
 
+        // 用于处理服务注解
+        // ServiceAnnotationBeanPostProcessor 处理器实现了 BeanDefinitionRegistryPostProcessor接口，Spring容器中所有Bean注册之后回调postProcessBeanDefinitionRegistry方法开始扫描@Service注解并注入容器
         registerServiceAnnotationBeanPostProcessor(packagesToScan, registry);
-
+        // 用于处理消费注解
+        // ReferenceAnnotationBeanPostProcessor 主要做以下几种事情：
+        // 1.获取类中标注的^Reference注解的字段和方法
+        // 2.反射设置字段或方法对应的引用
         registerReferenceAnnotationBeanPostProcessor(registry);
 
     }

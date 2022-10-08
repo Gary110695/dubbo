@@ -99,9 +99,9 @@ public class DubboConfigBindingRegistrar implements ImportBeanDefinitionRegistra
                 Collections.singleton(resolveSingleBeanName(properties, configClass, registry));
 
         for (String beanName : beanNames) {
-
+            // 如果用户配置了属性，比如dubbo.application.name，则会自动创建对应Spring Bean到容器
             registerDubboConfigBean(beanName, configClass, registry);
-
+            // 注册和配置对象Bean属性绑定处理器DubboConfigBindingBeanPostProcessor，委托Spring做属性值绑定
             registerDubboConfigBindingBeanPostProcessor(prefix, beanName, multiple, registry);
 
         }
