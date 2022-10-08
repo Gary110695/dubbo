@@ -50,6 +50,7 @@ public class ProtocolFilterWrapper implements Protocol {
             for (int i = filters.size() - 1; i >= 0; i--) {
                 final Filter filter = filters.get(i);
                 final Invoker<T> next = last;
+                // 会把真实的 Invoker（服务对象ref）放到拦截器的末尾
                 last = new Invoker<T>() {
 
                     @Override
@@ -69,6 +70,7 @@ public class ProtocolFilterWrapper implements Protocol {
 
                     @Override
                     public Result invoke(Invocation invocation) throws RpcException {
+                        // 每次调用都会传递给下一个拦截器
                         return filter.invoke(next, invocation);
                     }
 
@@ -97,6 +99,7 @@ public class ProtocolFilterWrapper implements Protocol {
         if (Constants.REGISTRY_PROTOCOL.equals(invoker.getUrl().getProtocol())) {
             return protocol.export(invoker);
         }
+        // 先构造拦截器链（会过滤provider端分组），然后触发Dubbo协议暴露
         return protocol.export(buildInvokerChain(invoker, Constants.SERVICE_FILTER_KEY, Constants.PROVIDER));
     }
 

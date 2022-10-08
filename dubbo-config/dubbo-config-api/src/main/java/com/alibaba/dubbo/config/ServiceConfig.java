@@ -353,8 +353,12 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void doExportUrls() {
+        // 获取当前服务对应的注册中心实例
+        // 如果没有显示指定服务注册中心，则默认会用全局配置的注册中心
         List<URL> registryURLs = loadRegistries(true);
+        // 如果服务指定暴露多个协议（Dubbo、REST），则依次暴露服务
         for (ProtocolConfig protocolConfig : protocols) {
+            // 真正的进行服务暴露
             doExportUrlsFor1Protocol(protocolConfig, registryURLs);
         }
     }
@@ -372,8 +376,10 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         if (ConfigUtils.getPid() > 0) {
             map.put(Constants.PID_KEY, String.valueOf(ConfigUtils.getPid()));
         }
+        // 读取其他配置信息到 map，用于后续构造 URL
         appendParameters(map, application);
         appendParameters(map, module);
+        // 读取全局配置信息，会自动添加前缀
         appendParameters(map, provider, Constants.DEFAULT_KEY);
         appendParameters(map, protocolConfig);
         appendParameters(map, this);
@@ -482,6 +488,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         if (!Constants.SCOPE_NONE.toString().equalsIgnoreCase(scope)) {
 
             // export to local if the config is not remote (export to remote only when config is remote)
+            // 本地服务暴露
             if (!Constants.SCOPE_REMOTE.toString().equalsIgnoreCase(scope)) {
                 exportLocal(url);
             }
@@ -494,6 +501,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                     for (URL registryURL : registryURLs) {
                         url = url.addParameterIfAbsent(Constants.DYNAMIC_KEY, registryURL.getParameter(Constants.DYNAMIC_KEY));
                         URL monitorUrl = loadMonitor(registryURL);
+                        // 如果配置了监控地址，则服务调用信息会上报
                         if (monitorUrl != null) {
                             url = url.addParameterAndEncoded(Constants.MONITOR_KEY, monitorUrl.toFullString());
                         }
@@ -506,17 +514,17 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                         if (StringUtils.isNotEmpty(proxy)) {
                             registryURL = registryURL.addParameter(Constants.PROXY_KEY, proxy);
                         }
-
+                        // 通过动态代理转换成Invoker，registryURL存储的是注册中心地址，使用export作为key追加服务元数据信息
                         Invoker<?> invoker = proxyFactory.getInvoker(ref, (Class) interfaceClass, registryURL.addParameterAndEncoded(Constants.EXPORT_KEY, url.toFullString()));
                         DelegateProviderMetaDataInvoker wrapperInvoker = new DelegateProviderMetaDataInvoker(invoker, this);
-
+                        // 服务暴露后向注册中心注册服务信息
                         Exporter<?> exporter = protocol.export(wrapperInvoker);
                         exporters.add(exporter);
                     }
                 } else {
                     Invoker<?> invoker = proxyFactory.getInvoker(ref, (Class) interfaceClass, url);
                     DelegateProviderMetaDataInvoker wrapperInvoker = new DelegateProviderMetaDataInvoker(invoker, this);
-
+                    // 处理没有注册中心的场景，直接暴露服务
                     Exporter<?> exporter = protocol.export(wrapperInvoker);
                     exporters.add(exporter);
                 }
@@ -529,10 +537,11 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     private void exportLocal(URL url) {
         if (!Constants.LOCAL_PROTOCOL.equalsIgnoreCase(url.getProtocol())) {
             URL local = URL.valueOf(url.toFullString())
-                    .setProtocol(Constants.LOCAL_PROTOCOL)
+                    .setProtocol(Constants.LOCAL_PROTOCOL)  // 指定用injvm协议暴露服务，这个协议比较特殊，不会做端口打开操作，仅仅把服务保存在内存中而已
                     .setHost(LOCALHOST)
                     .setPort(0);
             ServiceClassHolder.getInstance().pushServiceClass(getServiceClass(ref));
+            // 调用 InjvmProtocol#export
             Exporter<?> exporter = protocol.export(
                     proxyFactory.getInvoker(ref, (Class) interfaceClass, local));
             exporters.add(exporter);

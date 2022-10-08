@@ -87,8 +87,10 @@ public class ReferenceAnnotationBeanPostProcessor extends InstantiationAwareBean
     public PropertyValues postProcessPropertyValues(
             PropertyValues pvs, PropertyDescriptor[] pds, Object bean, String beanName) throws BeanCreationException {
 
+        // 查找Bean所有标注了@Reference的字段和方法
         InjectionMetadata metadata = findReferenceMetadata(beanName, bean.getClass(), pvs);
         try {
+            // 对字段、方法进行反射绑定
             metadata.inject(bean, beanName, pvs);
         } catch (BeanCreationException ex) {
             throw ex;
@@ -113,6 +115,7 @@ public class ReferenceAnnotationBeanPostProcessor extends InstantiationAwareBean
             @Override
             public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
 
+                // 遍历服务类所有的字段，查找出@Reference注解标注的
                 Reference reference = getAnnotation(field, Reference.class);
 
                 if (reference != null) {
